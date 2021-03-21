@@ -1,5 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import * as L from 'leaflet';
+import { ChatService } from '../shared/chat.service';
+import { Chat } from '../shared/models/chat';
 
 @Component({
   selector: 'wolfchatter-map',
@@ -10,10 +12,11 @@ export class MapComponent implements AfterViewInit {
   private map;
   private markers: L.Marker[] = [];
 
-  constructor() {}
+  constructor(private chatService: ChatService) {}
 
   ngAfterViewInit() {
     this.initMap();
+    this.initChatMarkers();
 
     this.map.on('click', (event: L.LeafletMouseEvent) => {
       this.addMarker(event.latlng);
@@ -30,10 +33,18 @@ export class MapComponent implements AfterViewInit {
     tiles.addTo(this.map);
   }
 
+  private initChatMarkers() {
+    this.chatService.getChats().subscribe((chats: Chat[]) => {
+      chats.forEach(c => this.addMarker(new L.LatLng(c.lat, c.lng)));
+    })
+  }
+
   addMarker(coords: L.LatLng) {
     const marker = L.marker(coords).addTo(this.map);
     marker.on('click', this.handleMarkerClick, this);
     this.markers.push(marker);
+
+    this.chatService.addChat(coords);
   }
 
   handleMarkerClick(event: L.LeafletMouseEvent) {

@@ -5,9 +5,9 @@ export class Chat {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column()
+  @Column({ type: 'float' })
   public lat: number;
 
-  @Column()
+  @Column({ type: 'float' })
   public lng: number;
 }
