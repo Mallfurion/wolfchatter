@@ -20,6 +20,7 @@ export class MapComponent implements AfterViewInit {
 
     this.map.on('click', (event: L.LeafletMouseEvent) => {
       this.addMarker(event.latlng);
+      this.chatService.addChat(event.latlng);
     })
   }
 
@@ -43,8 +44,6 @@ export class MapComponent implements AfterViewInit {
     const marker = L.marker(coords).addTo(this.map);
     marker.on('click', this.handleMarkerClick, this);
     this.markers.push(marker);
-
-    this.chatService.addChat(coords);
   }
 
   handleMarkerClick(event: L.LeafletMouseEvent) {
