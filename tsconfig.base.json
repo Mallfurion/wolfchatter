@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@wolfchat/client/*": ["apps/client/src/app/*"],
+      "@wolfchat/client-env": ["apps/client/src/environments/environment"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
