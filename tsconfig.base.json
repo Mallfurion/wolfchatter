@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@wolfchat/client/*": ["apps/client/src/app/*"],
-      "@wolfchat/client-env": ["apps/client/src/environments/environment"]
+      "@wolfchat/client-env": ["apps/client/src/environments/environment"],
+      "@wolfchat/api/*": ["apps/api/src/app/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
