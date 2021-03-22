@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Chat } from './chat/entities/chat.entity';
+import { Message } from './chat/entities/message.entity';
 
  
 @Module({
@@ -18,6 +19,7 @@ import { Chat } from './chat/entities/chat.entity';
         database: configService.get('POSTGRES_DB'),
         entities: [
             Chat,
+            Message,
         ],
         synchronize: true,
       })

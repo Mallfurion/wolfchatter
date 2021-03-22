@@ -2,12 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { CreateMessageDto } from './dto/create-message.dto';
 import { Chat } from './entities/chat.entity';
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class ChatService {
-  constructor(@InjectRepository(Chat) private chatRepository: Repository<Chat>) { }
+  constructor(
+    @InjectRepository(Chat) private chatRepository: Repository<Chat>,
+    @InjectRepository(Message) private messageRepository: Repository<Message>,
+  ) { }
 
   async create(payload: CreateChatDto) {
     const newChat = await this.chatRepository.create(payload);
@@ -27,14 +31,38 @@ export class ChatService {
     return chat;
   }
 
-  // update(id: number, updateChatDto: UpdateChatDto) {
-  //   return `This action updates a #${id} chat`;
-  // }
-
   async remove(id: number) {
     const deleteResult = await this.chatRepository.delete(id);
     if (!deleteResult.affected) {
       throw new NotFoundException(`Chat with id: ${id} not found.`);
     }
+  }
+
+  /**
+   * Messages
+   */
+
+  async createMessage(payload: CreateMessageDto, chatId: number) {
+    const chat = await this.chatRepository.findOne(chatId);
+    if (!chat) {
+      throw new NotFoundException(`Chat with id: ${chatId} not found.`);
+    }
+    const message = await this.messageRepository.create({
+      author: payload.author,
+      content: payload.content,
+      chat: chat,
+    });
+    await this.messageRepository.save(message);
+    return message;
+  }
+
+  async findAllMessages(chatId: number) {
+    const chat = await this.chatRepository.findOne(chatId);
+    if (!chat) {
+      throw new NotFoundException(`Chat with id: ${chatId} not found.`);
+    }
+    return await this.messageRepository.find({
+      chat: chat,
+    });
   }
 }
