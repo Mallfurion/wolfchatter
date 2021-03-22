@@ -1,1 +1,8 @@
-<wolfchatter-map></wolfchatter-map>
+<wolfchatter-map *ngIf="!askForUser"></wolfchatter-map>
+
+<div class="card" *ngIf="askForUser">
+    <div class="username input-group">
+        <input type="text" class="form-control" #name>
+        <button class="btn btn-primary" (click)="setName(name.value)">Set username</button>
+    </div>
+</div>
