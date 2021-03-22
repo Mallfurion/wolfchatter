@@ -1,0 +1,13 @@
+<div class="chat" *ngIf="chatId">
+  <h3 class="title" [innerHTML]="chatId"></h3>
+  <div class="messages" #messagesContainer>
+    <div class="message" *ngFor="let message of messages">
+      <div class="author" [innerHTML]="message.author"></div>
+      <div class="content" [innerHTML]="message.content"></div>
+    </div>
+  </div>
+  <div class="add-message">
+    <input class="form-control" type="text" [(ngModel)]="newMessage">
+    <button class="btn" (click)="addMessage()" [disabled]="!newMessage">Add</button>
+  </div>
+</div>

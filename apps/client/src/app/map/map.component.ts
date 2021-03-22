@@ -11,6 +11,7 @@ import { Chat } from '../shared/models/chat';
 export class MapComponent implements AfterViewInit {
   private map;
   private markers: L.Marker[] = [];
+  selectedMarker: number = null;
 
   constructor(private chatService: ChatService) {}
 
@@ -19,8 +20,9 @@ export class MapComponent implements AfterViewInit {
     this.initChatMarkers();
 
     this.map.on('click', (event: L.LeafletMouseEvent) => {
-      this.addMarker(event.latlng);
-      this.chatService.addChat(event.latlng);
+      this.chatService.addChat(event.latlng).subscribe(res => {
+        this.addMarker(event.latlng, res.id);
+      });
     })
   }
 
@@ -36,12 +38,12 @@ export class MapComponent implements AfterViewInit {
 
   private initChatMarkers() {
     this.chatService.getChats().subscribe((chats: Chat[]) => {
-      chats.forEach(c => this.addMarker(new L.LatLng(c.lat, c.lng)));
+      chats.forEach(c => this.addMarker(new L.LatLng(c.lat, c.lng), c.id));
     })
   }
 
-  addMarker(coords: L.LatLng) {
-    const marker = L.marker(coords).addTo(this.map);
+  addMarker(coords: L.LatLng, id) {
+    const marker = new L.Marker(coords, <any>{id: id}).addTo(this.map);
     marker.on('click', this.handleMarkerClick, this);
     this.markers.push(marker);
   }
@@ -49,5 +51,6 @@ export class MapComponent implements AfterViewInit {
   handleMarkerClick(event: L.LeafletMouseEvent) {
     this.markers.forEach((m: any) => m._icon.classList.remove('active-marker'));
     event.target._icon.classList.add('active-marker');
+    this.selectedMarker = event.target.options.id;
   }
 }
