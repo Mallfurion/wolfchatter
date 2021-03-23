@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database.module';
 import { ChatModule } from './chat/chat.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({

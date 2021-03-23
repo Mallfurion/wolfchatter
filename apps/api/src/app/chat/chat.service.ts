@@ -1,16 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatGateway } from './chat.gateway';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Chat } from './entities/chat.entity';
 import { Message } from './entities/message.entity';
+import { SocketService } from './socket.service';
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectRepository(Chat) private chatRepository: Repository<Chat>,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
+    private socketService: SocketService,
+    private gateway: ChatGateway,
   ) { }
 
   async create(payload: CreateChatDto) {
@@ -53,6 +57,7 @@ export class ChatService {
       chat: chat,
     });
     await this.messageRepository.save(message);
+    this.socketService.sendMessage(message);
     return message;
   }
 

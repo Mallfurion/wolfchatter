@@ -1,5 +1,9 @@
+import { Chat } from "./chat";
+
 export class ChatMessage {
-    chatId: number;
+    id: number;
+    chat: Chat;
     author: string;
     content: string;
+    timestamp: Date;
 }
