@@ -2,6 +2,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import * as L from 'leaflet';
 import { ChatService } from '../shared/chat.service';
 import { Chat } from '../shared/models/chat';
+import { SocketService } from '../shared/socket.service';
 
 @Component({
   selector: 'wolfchatter-map',
@@ -13,7 +14,7 @@ export class MapComponent implements AfterViewInit {
   private markers: L.Marker[] = [];
   selectedMarker: number = null;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService, private socketService: SocketService) {}
 
   ngAfterViewInit() {
     this.initMap();
@@ -23,6 +24,10 @@ export class MapComponent implements AfterViewInit {
       this.chatService.addChat(event.latlng).subscribe(res => {
         this.addMarker(event.latlng, res.id);
       });
+    });
+
+    this.socketService.getChatNotifications().subscribe(c => {
+      this.addMarker(new L.LatLng(c.lat, c.lng), c.id);
     })
   }
 

@@ -1,8 +1,10 @@
 import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { environment } from '@wolfchat/client-env';
+import { Observable, Subscription } from 'rxjs';
 
 import { ChatService } from '../shared/chat.service';
 import { ChatMessage } from '../shared/models/message';
+import { SocketService } from '../shared/socket.service';
 
 @Component({
   selector: 'wolfchatter-chat',
@@ -13,9 +15,11 @@ export class ChatComponent implements OnChanges {
   @Input() chatId: number;
   messages: ChatMessage[] = [];
   newMessage: string;
-  socket: WebSocket;
+  subscription: Subscription;
 
-  constructor(private chatService: ChatService) { }
+  constructor(private chatService: ChatService, private socketService: SocketService) {
+    
+  }
   @ViewChild('messagesContainer') messagesContainer: ElementRef;
 
   ngOnChanges(): void {
@@ -24,9 +28,17 @@ export class ChatComponent implements OnChanges {
       this.chatService.getMessages(this.chatId).subscribe((messages: ChatMessage[]) => {
         this.messages = messages;
         this.scrollContainer();
-        this.closePreviousSocket();
-        this.subscribeToSocket();
+        if (this.subscription) {
+          this.subscription.unsubscribe();
+        }
+        this.subscription = this.socketService.getChatMessageNotifications(this.chatId).subscribe((message: ChatMessage) => {
+          if (!(message.id in this.messages.map(m => m.id))) {
+            this.messages.push(message);
+            this.scrollContainer();
+          }
+        })
       });
+
     }
   }
 
@@ -34,25 +46,6 @@ export class ChatComponent implements OnChanges {
     this.chatService.addMessage(this.chatId, this.newMessage).subscribe((res: ChatMessage) => {
       this.newMessage = null;
     });
-  }
-
-  closePreviousSocket() {
-    if (this.socket) {
-      this.socket.close();
-    }
-  }
-
-  subscribeToSocket() {
-    this.socket = new WebSocket(environment.wsUrl);
-    this.socket.onmessage = this.handleSocketMessage.bind(this);
-  }
-
-  handleSocketMessage(messageEvent: MessageEvent) {
-    const message = <ChatMessage>JSON.parse(messageEvent.data);
-    if (message.chat.id === this.chatId && !(message.id in this.messages.map(m => m.id))) {
-      this.messages.push(message);
-      this.scrollContainer();
-    }
   }
 
   scrollContainer() {
