@@ -1,0 +1,10 @@
+server {
+    server_name wolfchatter.florin.me;
+
+    root /var/www/wolfchatter/dist/apps/client;
+    index index.html;
+
+    location / {
+            try_files $uri $uri/ /index.html;
+    }
+}
