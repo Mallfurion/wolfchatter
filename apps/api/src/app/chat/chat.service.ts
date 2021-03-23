@@ -14,12 +14,12 @@ export class ChatService {
     @InjectRepository(Chat) private chatRepository: Repository<Chat>,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
     private socketService: SocketService,
-    private gateway: ChatGateway,
   ) { }
 
   async create(payload: CreateChatDto) {
     const newChat = await this.chatRepository.create(payload);
     await this.chatRepository.save(newChat);
+    this.socketService.sendChat(newChat);
     return newChat;
   }
 
