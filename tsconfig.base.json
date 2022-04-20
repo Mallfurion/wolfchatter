@@ -15,9 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@wolfchat/client/*": ["apps/client/src/app/*"],
+      "@wolfchat/api/*": ["apps/api/src/app/*"],
       "@wolfchat/client-env": ["apps/client/src/environments/environment"],
-      "@wolfchat/api/*": ["apps/api/src/app/*"]
+      "@wolfchat/client/*": ["apps/client/src/app/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
